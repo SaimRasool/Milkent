@@ -1,0 +1,34 @@
+﻿@model Milkent.Models.MdlPurchase
+
+@{
+    ViewBag.Title = "IncomeStatement";
+}
+
+<!-- Page Header-->
+<header class="page-header">
+    <div class="container-fluid">
+        <h2 class="no-margin-bottom">Income Statement</h2>
+    </div>
+</header>
+<div class="p-5">
+    <div class="row">
+        @using (Html.BeginForm("ViewIncomeStatement", "Reports", FormMethod.Post))
+        {
+        <div class="form-inline pl-5">
+            <div class="input-group form-inline">
+                @Html.EditorFor(model => model.FromDate, new { htmlAttributes = new { @placeholder = "Start Date", @class = "form-control col-5", @id = "min" } })
+                <div class="input-group-prepend">
+                    <span class="input-group-text">to</span>
+                </div>
+                @Html.EditorFor(model => model.ToDate, new { htmlAttributes = new { @class = "form-control col-5", @placeholder = "End Date" } })
+            </div>
+
+
+
+            <input type="submit" value="Submit" class="btn btn-primary" />
+        </div>
+        
+        
+        }
+    </div>
+</div>

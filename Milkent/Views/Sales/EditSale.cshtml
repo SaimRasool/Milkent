@@ -1,0 +1,122 @@
+﻿@model Milkent.Models.MdlSales
+@{
+    ViewBag.Title = "Edit Sale";
+}
+
+<header class="page-header">
+    <div class="container-fluid">
+        <h2 class="no-margin-bottom">Edit Sale</h2>
+    </div>
+</header>
+
+<div class="row">
+    <div class="col-md-12">
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+        <div class="form-inline">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(model => model.ID)
+            @Html.HiddenFor(model => model.Date)
+
+            <div class="col-12 m-auto">
+                <p class="alert alert-info text-center col-5">Milk in Chiler @ViewBag.Milk</p>
+            </div>
+            <div class="col-6 pt-4">
+                <div class="form-group">
+                    <label class="text-violet col-md-5"><span class="text-red">*</span> Milk /دودھ:</label>
+                    @Html.EditorFor(model => model.MilkCredit, new { htmlAttributes = new { @class = "form-control", @id = "milk" } })
+                    @Html.ValidationMessageFor(model => model.MilkCredit, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="col-6 pt-4">
+                <div class="form-group">
+                    <label class="text-violet col-md-5"><span class="text-red">*</span><span class="text-info">Per Liter</span> / ریٹ:</label>
+                    @Html.EditorFor(model => model.SalePrice, new { htmlAttributes = new { @class = "form-control", @id = "sale" } })
+                    @Html.ValidationMessageFor(model => model.SalePrice, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="col-6 pt-4">
+                <div class="form-group">
+                    <label class="text-violet col-md-5"><span class="text-red">*</span>Fat</label>
+                    @Html.EditorFor(model => model.Fat, new { htmlAttributes = new { @class = "form-control", @id = "fat", @onInput = "calculateTS()" } })
+                    @Html.ValidationMessageFor(model => model.Fat, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="col-6 pt-4">
+                <div class="form-group">
+                    <label class="text-violet col-md-5"><span class="text-red">*</span>LR</label>
+                    @Html.EditorFor(model => model.LR, new { htmlAttributes = new { @class = "form-control", @id = "lr", @onInput = "calculateTS()" } })
+                    @Html.ValidationMessageFor(model => model.LR, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="col-6 pt-4">
+                <div class="form-group">
+                    <label class="text-violet col-md-5">دودھ TS</label>
+                    <input class="form-control" id="ts" disabled />
+                </div>
+            </div>
+            <div class="col-6 pt-4">
+                <div class="form-group">
+                    <label class="text-violet col-md-5">Total /کل رقم</label>
+                    <input class="form-control" id="total" disabled />
+                </div>
+            </div>
+
+            <div class="col-6 pt-4">
+                <div class="form-group">
+                    <label class="text-violet col-md-5"><span class="text-red">*</span>جمع رقم</label>
+                    @Html.EditorFor(model => model.CashDebit, new { htmlAttributes = new { @class = "form-control", @id = "debit", @oninput = "calculateBalance()" } })
+                    @Html.ValidationMessageFor(model => model.CashDebit, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="col-6 pt-4">
+                <div class="form-group">
+                    <label class="text-violet col-md-5">Balance / بقایا</label>
+                    <input class="form-control" id="balance" disabled />
+                </div>
+            </div>
+
+            <div class="col pt-4 pb-3">
+                <div class="offset-2">
+                    <button type="submit" class="btn btn-default btnsm "><i class="bg-cover fa fa-save"></i> Save</button>
+                </div>
+            </div>
+        </div>
+
+
+        }
+    </div>
+
+</div>
+<script>
+
+    function calculateBalance() {
+        document.getElementById("balance").value = null;
+        var dr = document.getElementById("debit").value;
+        var total = document.getElementById("total").value;
+        var balance = total - cr;
+        document.getElementById("balance").value += balance;
+    }
+    function calculateTS() {
+        document.getElementById("ts").value = null;
+        document.getElementById("total").value = null;
+        var milk = parseFloat(document.getElementById("milk").value);
+        var lr = parseFloat(document.getElementById("lr").value);
+        var fat = parseFloat(document.getElementById("fat").value);
+        var sale = parseFloat(document.getElementById("sale").value);
+        var f = fat * 0.22;
+        var l = (lr / 4) + 0.72;
+        var t = f + l;
+        var tl = t + fat;
+        var ts = (milk * tl) / 13;
+        var total = sale * ts;
+        document.getElementById("ts").value += ts;
+        document.getElementById("total").value += total;
+
+    }
+</script>
+

@@ -1,0 +1,153 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    <link href="~/Content/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/Content/Dashboard/fontastic.css" rel="stylesheet" />
+    <link href="~/Content/Dashboard/style.default.css" rel="stylesheet" />
+    <link href="~/Content/Dashboard/style.blue.css" rel="stylesheet" />
+    @Scripts.Render("~/bundles/jquery")
+    <script src="~/Scripts/umd/popper.min.js"></script>
+    <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.bootstrap4.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="page">
+        <!-- Main Navbar-->
+        <header class="header">
+            <nav class="navbar">
+                <div class="container-fluid">
+                    <div class="navbar-holder d-flex align-items-center justify-content-between">
+                        <!-- Navbar Header-->
+                        <div class="navbar-header">
+                            <!-- Navbar Brand --><a href='@Url.Action("Index","Home")' class="navbar-brand d-none d-sm-inline-block">
+                                <div class="brand-text d-none d-lg-inline-block"><span>AlMukhtar </span><strong>Dairy</strong></div>
+                                <div class="brand-text d-none d-sm-inline-block d-lg-none"><strong>AD</strong></div>
+                            </a>
+                            <!-- Toggle Button--><a id="toggle-btn" href="#" class="menu-btn active"><span></span><span></span><span></span></a>
+                        </div>
+                        <!-- Navbar Menu -->
+                        <ul class="nav-menu list-unstyled d-flex flex-md-row align-items-md-center">
+
+                            <!-- Logout    -->
+                            <li class="nav-item"><a href='@Url.Action("Logout","Account")' class="nav-link logout"> <span class="d-none d-sm-inline">Logout</span><i class="fa fa-sign-out"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <div class="page-content d-flex align-items-stretch">
+            <!-- Side Navbar -->
+            <nav class="side-navbar">
+                <!-- Sidebar Header-->
+                <div class="sidebar-header d-flex align-items-center">
+                    <div class="avatar">
+                        @if (Session != null && Session["Image"] != null)
+                        {
+                            <img src="@Url.Content(Session["Image"].ToString())" alt="User Pic" class="img-fluid rounded-circle">
+                        }
+                        else
+                        {
+                            <i class="fa fa-user-circle-o img-fluid rounded-circle"></i>
+                        }
+                    </div>
+                    <div class="title">
+                        <h1 class="h4">Mukhtar</h1>
+                        <p>Owner</p>
+                    </div>
+                </div>
+                <!-- Sidebar Navidation Menus-->
+                <ul class="list-unstyled">
+                    <li class="active"><a href='@Url.Action("Index","Home")'> <i class="icon-home"></i>Home </a></li>
+                    <span class="heading">Accounts</span>
+                    <li>
+                        <a href="#Supplier" aria-expanded="false" data-toggle="collapse"> <i class="fa fa-bus"></i>Suppliers </a>
+                        <ul id="Supplier" class="collapse list-unstyled ">
+                            <li><a href='@Url.Action("Index","Supplier")'><i class="fa fa-bus"></i>Suppliers</a></li>
+                            <li><a href='@Url.Action("SupplierReceipt","Supplier")'><i class="icon icon-check"></i>Supplier Payment</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#Customer" aria-expanded="false" data-toggle="collapse"> <i class="fa fa-group"></i>Customers </a>
+                        <ul id="Customer" class="collapse list-unstyled ">
+                            <li><a href='@Url.Action("Index","Customer")'><i class="fa fa-group"></i>Customers</a></li>
+                            <li><a href='@Url.Action("CustomerReceipt","Customer")'><i class="icon icon-check"></i>Customers Payment</a></li>
+                        </ul>
+                    </li>
+                    <span class="heading">Sale & Purchase</span>
+                    <li>
+                        <a href="#Purchase" aria-expanded="false" data-toggle="collapse"> <i class="icon icon-grid"></i>Purchases </a>
+                        <ul id="Purchase" class="collapse list-unstyled ">
+                            <li><a href='@Url.Action("NewPurchases","Purchase")'><i class="fa fa-circle-o"></i>New Purchase</a></li>
+                            <li><a href='@Url.Action("Index","Purchase")'><i class="icon icon-grid"></i>Purchases</a></li>
+                            <li><a href='@Url.Action("NewPurchaseBill","Purchase")'><i class="fa fa-file"></i>Generate Receipt</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#Sale" aria-expanded="false" data-toggle="collapse"> <i class="fa fa-cart-arrow-down"></i>Sales </a>
+                        <ul id="Sale" class="collapse list-unstyled ">
+                            <li><a href='@Url.Action("NewSale","Sales")'><i class="fa fa-circle-o"></i>New Sale</a></li>
+                            <li><a href='@Url.Action("Index","Sales")'><i class="fa fa-shopping-cart"></i>Sales</a></li>
+                        </ul>
+                    </li>
+                    <span class="heading">Reports</span>
+                    <li>
+                        <a href="#Report" aria-expanded="false" data-toggle="collapse"> <i class="icon icon-bill"></i>Reports </a>
+                        <ul id="Report" class="collapse list-unstyled ">
+                            <li><a href='@Url.Action("IncomeStatement","Reports")'><i class="icon icon-bill"></i>income Statement</a></li>
+                            <li><a href="#"><i class="icon icon-bill"></i>Customer Payments Reports</a></li>
+                            <li><a href="#"><i class="icon icon-bill"></i>Supplier Payments Reports</a></li>
+                            <li><a href='@Url.Action("CustomerSalesReport","Reports")'><i class="icon icon-bill"></i>Cutomers Sales Reports</a></li>
+                            <li><a href='@Url.Action("SupplierPurchaseReport","Reports")'><i class="icon icon-bill"></i>Supplier Purchase Reports</a></li>
+                        </ul>
+                    </li>
+                    @if (Session != null && Session["Role"] != null)
+                    {
+                        if (Session["Role"] as string == "admin")
+                        {
+                            <span class="heading">Accounts</span>
+                            <li>
+                                <a href="#account" aria-expanded="false" data-toggle="collapse"> <i class="icon icon-user"></i>Account </a>
+                                <ul id="account" class="collapse list-unstyled ">
+                                    <li><a href='@Url.Action("CreateAccount","Account")'><i class="fa fa-circle-o"></i>New Account</a></li>
+                                    <li><a href='@Url.Action("Index","Account")'><i class="icon icon-user"></i>Account</a></li>
+                                </ul>
+                            </li>
+                        }
+                    }
+
+
+                </ul>
+            </nav>
+            <div class="content-inner">
+
+                @RenderBody()
+
+                <!-- Page Footer-->
+                <footer class="main-footer">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+                            </div>
+                            <div class="col-sm-6 text-right">
+                                <p>Developed by <a href="#" class="external">Saim Rasool</a></p>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+    </div>
+
+
+    @Scripts.Render("~/bundles/bootstrap")
+    <script src="~/Scripts/Dashboard/front.js"></script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

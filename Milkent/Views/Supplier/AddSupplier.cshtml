@@ -1,0 +1,67 @@
+﻿@model Milkent.Models.MdlSupplier
+@{
+    List<SelectListItem> ProgramlistItems = new List<SelectListItem>();
+    ProgramlistItems.Add(new SelectListItem
+    { Text = "Doodh Wala", Value = "Doodh Wala" });
+    ProgramlistItems.Add(new SelectListItem
+    { Text = "Simple", Value = "Simple", });
+}
+<div class="modal-header">
+    <h4 id="exampleModalLabel" class="modal-title">New Supplier</h4>
+    <button type="button" data-dismiss="modal" aria-label="Close" class="close"><span aria-hidden="true">×</span></button>
+</div>
+<div class="modal-body">
+    @using (Html.BeginForm("AddSupplier", "Supplier", FormMethod.Post, new { enctype = "multipart/form-data", @class = "needs-validated" }))
+    {
+        @Html.AntiForgeryToken()
+
+    <div class="form-inline">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            <label class="mr-sm-2 text-violet"><span class="text-red">*</span>Name:</label>
+            @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control mb-3 mr-sm-5" } })
+            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+
+            <label class="mr-sm-2 text-violet"><span class="text-red">*</span>Address:</label>
+            @Html.EditorFor(model => model.Address, new { htmlAttributes = new { @class = "form-control mb-3" } })
+            @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label class="mr-sm-2 text-violet"><span class="text-red">*</span>Mobile:</label>
+            @Html.EditorFor(model => model.PhoneNo, new { htmlAttributes = new { @class = "form-control mb-3 mr-sm-5" } })
+            @Html.ValidationMessageFor(model => model.PhoneNo, "", new { @class = "text-danger" })
+
+            <label class="mr-sm-2 text-violet"><span class="text-red">*</span>Type:</label>
+            @Html.DropDownListFor(model => model.Type, ProgramlistItems, "--Select--", new { @class = "form-control text-center mb-3" })
+            @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
+        </div>
+            <div class="form-group">
+                <label class="mr-sm-2 text-violet"><span class="text-red">*</span><span class="text-info">Per Liter</span> / ریٹ:</label>
+                @Html.EditorFor(model => model.PurchasePrice, new { htmlAttributes = new { @class = "form-control", @id = "pur" } })
+                @Html.ValidationMessageFor(model => model.PurchasePrice, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group">
+                <label class="mr-sm-2 text-violet"><span class="text-red">*</span>Image:</label>
+                <input name="file" type="file" required class="mb-3 mr-sm-3" onchange="readURL(this);" />
+                <img id="blah" class="img-thumbnail" src='' alt="your image" />
+                <input type="submit" value="Save" class="btn btn-default fa fa-save mb-2" />
+            </div>
+    </div>
+    }
+</div>
+<script>
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('#blah')
+                    .attr('src', e.target.result)
+                    .width(150)
+                    .height(200);
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>

@@ -1,0 +1,179 @@
+﻿@model Milkent.Models.MdlSales
+@{
+    ViewBag.Title = "CustomerSalesReport";
+}
+<script>
+    var otable = "";
+    var Customer = "";
+
+        $(document).ready(function () {
+            $('img').hide();
+            otable=  $("#demoGrid").DataTable({
+                "language":
+                {
+                    "processing": "<div class='overlay custom-loader-background'><i class='fa fa-cog fa-spin custom-loader-color'></i></div>"
+                },
+                "processing": true, // for show progress bar
+                "retrieve": true,
+                "serverSide": true, // for process server side
+                "filter": false, // this is for disable filter (search box)
+                "orderMulti": false, // for disable multiple column at once
+                // "dom": '<"top"i>rt<"bottom"lp><"clear">',
+                "ajax": {
+                    "url": "/Reports/LoadSalesData",
+                    'data': function (data) {
+                        // Read values
+                        var from_date = $('#min').val();
+                        var to_date = $('#max').val();
+                        var DayPart = $('#partOfDay').val();
+                        if (from_date != null && to_date != null && DayPart != null && Customer != null) {
+                            data.searchByFromdate = from_date;
+                            data.searchByTodate = to_date;
+                            data.searchByDayPart = DayPart;
+                            data.searchByCustomer = Customer;
+                        }
+                        else {
+                            data.searchByFromdate = "";
+                            data.searchByTodate = "";
+                            data.searchByDayPart = "";
+                            data.searchByCustomer = "";
+
+                        }
+
+                        // Append to data
+
+                    },
+                    "type": "POST",
+                    "scrollX": true,
+                    "datatype": "json"
+                },
+                "columnDefs": [{
+                    "targets": [0],
+                    "visible": false,
+                    "searchable": true
+                }],
+                "columns": [
+                    { "data": "ID", "name": "ID", "autoWidth": true },
+                    {
+                        'data': 'Date',
+                        'render': function (jsonDate) {
+                            var date = new Date(parseInt(jsonDate.substr(6)));
+                            var month = ("0" + (date.getMonth() + 1)).slice(-2);
+                            return ("0" + date.getDate()).slice(-2) + '-' + month + '-' + date.getFullYear();
+                        }
+                    },
+                    { "data": "PartOfDay", "name": "PartOfDay", "autoWidth": true },
+                    { "data": "MilkCredit", "name": "MilkCredit", "autoWidth": true },
+                    { "data": "SalePrice", "name": "SalePrice", "autoWidth": true },
+                    { "data": "Fat", "name": "Fate", "autoWidth": true },
+                    { "data": "LR", "name": "LR", "autoWidth": true },
+                    { "data": "TS", "name": "LR", "autoWidth": true },
+                    { "data": "Total", "name": "Total", "autoWidth": true },
+                    { "data": "CashDebit", "name": "CashDebit", "autoWidth": true },
+                    {
+                        data: null,
+                        render: function (data, type, row) {
+                            return row.Total - row.CashDebit;
+                        }
+                    },
+                ]
+
+            });
+            $("#newLengthPlace").html($(".dataTables_length"));
+            });
+
+
+    function SelectedValue(ddlObject) {
+        $('img').hide();
+        var selectedValue=0;
+        if (ddlObject.value !=="")
+            selectedValue = parseInt(ddlObject.value);
+        Customer = selectedValue;
+        $('#' + selectedValue).show(300);
+        otable.draw();
+
+    };
+
+    function Search() {
+        otable.draw();
+    };
+
+</script>
+
+
+<!-- Page Header-->
+<header class="page-header">
+    <div class="container-fluid">
+        <h2 class="no-margin-bottom">Sales</h2>
+    </div>
+</header>
+
+<div class="p-3">
+    <div class="row">
+        <div class="col-4 pt-2">
+            @foreach (var item in Model.CustomerList)
+            {
+                <img src="@Url.Content(item.Image)" id="@item.ID" width="150" height="150" />
+            }
+        </div>
+        <div class="col-4 pt-2 pb-2 form-inline">
+            @if (Model.CustomerList != null)
+            {
+                <div class="form-group">
+                    <label class="text-violet mr-sm-1"><span class="text-red">*</span>Customer:</label>
+                    @Html.DropDownListFor(md => md.CustomerID, new SelectList(Model.CustomerList, "ID", "Name"), "--Select--", new { @class = "form-control", @style = "border-radius:17px;", @onChange = "SelectedValue(this)" })
+                </div>
+            }
+        </div>
+
+        <div class="card col-12">
+            <div class="card-header d-flex">
+                <h3 class="h4 m-auto">Sales</h3>
+            </div>
+            <div class="card-body col-md-12">
+                <div class="row p-3">
+                    <div id="newLengthPlace" class="form-inline col-3"></div>
+                    <div class="col-2 offset-2">
+                        <select id="partOfDay" class="form-control" onchange="Search()">
+                            <option value="" selected>شام/ صبح</option>
+                            <option value="Morning">Morning صبح</option>
+                            <option value="Evening">Evening شام </option>
+                        </select>
+                    </div>
+                    <div class="input-group form-inline col-5" id="dateRange">
+                        <input id="min" type="date" class="form-control col-5" placeholder="Start Date" onchange="Search()" />
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">to</span>
+                        </div>
+                        <input id="max" type="date" class="form-control col-5" placeholder="End Date" onchange="Search()" />
+                    </div>
+                </div>
+                <div class="table-responsive">
+
+                    <table id="demoGrid" class="table table-striped table-sm" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Date</th>
+                                <th>شام/صبح</th>
+                                <th>Milk/دودھ</th>
+                                <th>ریٹ</th>
+                                <th>Fat</th>
+                                <th>LR</th>
+                                <th>TS</th>
+                                <th>کل رقم</th>
+                                <th>جمع رقم</th>
+                                <th>بقایا</th>
+                            </tr>
+                        </thead>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+

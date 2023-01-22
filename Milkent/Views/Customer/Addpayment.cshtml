@@ -1,0 +1,73 @@
+﻿@model Milkent.Models.MdlPayment
+<header class="page-header">
+    <div class="container-fluid">
+        <h2 class="no-margin-bottom">Add Payment</h2>
+    </div>
+</header>
+    <div class="row">
+        <div class="col-md-12">
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(model => model.Bill_ID)
+
+                <div class="form-inline">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="col-6 pt-4">
+                        <div class="form-group">
+                            <label class="text-violet col-md-5">Total: </label>
+                            @Html.EditorFor(model => model.Total, new { htmlAttributes = new { @class = "form-control", @disabled = "disabled", @id = "total" } })
+                        </div>
+                    </div>
+                    <div class="col-6 pt-4">
+                        <div class="form-group">
+                            <label class="text-violet col-md-5">جمع: </label>
+                            @Html.EditorFor(model => model.Credit_Debit, new { htmlAttributes = new { @class = "form-control", @disabled = "disabled", @id = "cr" } })
+                        </div>
+                    </div>
+
+                    <div class="col-6 pt-4">
+                        <div class="form-group">
+                            <label class="text-violet col-md-5">Balance / بقایا</label>
+                            <input class="form-control" id="balance" disabled value="@Model.Total-@Model.Credit_Debit" />
+                        </div>
+                    </div>
+
+                    <div class="col-6 pt-4">
+                        <div class="form-group">
+                            <label class="text-violet col-md-5"><span class="text-red">*</span>جمع رقم</label>
+                            @Html.EditorFor(model => model.Credit_Debit, new { htmlAttributes = new { @class = "form-control", @id = "credit", @oninput = "calculateBalance()" } })
+                            @Html.ValidationMessageFor(model => model.Credit_Debit, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+
+                    <div class="col pt-4 pb-3">
+                        <div class="offset-2">
+                            <button type="submit" class="btn btn-default btnsm "><i class="bg-cover fa fa-save"></i> Save</button>
+                        </div>
+                    </div>
+                </div>
+
+
+            }
+        </div>
+
+    </div>
+<script>
+        $(document).ready(function () {
+            var total = document.getElementById("total").value;
+            var cr = document.getElementById("cr").value;
+            document.getElementById("credit").value = total - cr;
+            document.getElementById("balance").value = (total - cr);
+        });
+        function calculateBalance() {
+            var credit = document.getElementById("credit").value;
+            var total = document.getElementById("total").value;
+            var cr = document.getElementById("cr").value;
+            if (total - (cr + credit) < 1)
+                document.getElementById("balance").value = 0;
+            else
+                document.getElementById("balance").value = (total - cr) - credit;
+        }
+</script>

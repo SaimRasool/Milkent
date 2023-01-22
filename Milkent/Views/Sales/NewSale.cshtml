@@ -1,0 +1,166 @@
+﻿@model Milkent.Models.MdlSales
+@{
+    ViewBag.Title = "New Sale";
+}
+@{
+    List<SelectListItem> PartOfDayslist = new List<SelectListItem>();
+    PartOfDayslist.Add(new SelectListItem
+    { Text = "Morning صبح", Value = "Morning" });
+    PartOfDayslist.Add(new SelectListItem
+    { Text = "Evening شام ", Value = "Evening", });
+}
+<header class="page-header">
+    <div class="container-fluid">
+        <h2 class="no-margin-bottom">New Sale</h2>
+    </div>
+</header>
+
+<div class="row">
+    <div class="col-md-12">
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-inline">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                <div class="col-4 pt-3">
+                    @foreach (var item in Model.CustomerList)
+                    {
+                        <img src="@Url.Content(item.Image)" id="@item.ID" width="150" height="150" class="p-2" />
+                        <input value="@item.SalePrice" id="@item.ID+" hidden />
+                    }
+                    <p class="alert alert-info text-center col-5">Milk in Chiler @ViewBag.Milk</p>
+                </div>
+                <div class="col-4 pt-3">
+                    @if (Model.CustomerList != null)
+                    {
+                        <div class="form-group">
+                            <label class="text-violet mr-sm-1"><span class="text-red">*</span>Supplier:</label>
+                            @Html.DropDownListFor(md => md.CustomerID, new SelectList(Model.CustomerList, "ID", "Name"), "--Select--", new { @class = "form-control", @style = "border-radius:17px;", @onChange = "SelectedValue(this)" })
+                        </div>
+                    }
+                </div>
+                <div class="col-4 pt-3">
+                    <div class="form-group">
+                        <label class="text-violet mr-sm-2"><span class="text-red">*</span>شام/صبح:</label>
+                        @Html.DropDownListFor(model => model.PartOfDay, PartOfDayslist, "--Select--", new { @class = "form-control text-center mb-3" })
+                        @Html.ValidationMessageFor(model => model.PartOfDay, "", new { @class = "text-danger" })
+                        @*<label class="text-violet mr-sm-2"><span class="text-red">*</span>Date:</label>
+                            @Html.EditorFor(model => model.Date, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })*@
+                    </div>
+                </div>
+
+                <div class="col-6 pt-4">
+                    <div class="form-group">
+                        <label class="text-violet col-md-5"><span class="text-red">*</span> Milk /دودھ:</label>
+                        @Html.EditorFor(model => model.MilkCredit, new { htmlAttributes = new { @class = "form-control", @id = "milk", @onInput = "calculateTotal()" } })
+                        @Html.ValidationMessageFor(model => model.MilkCredit, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-6 pt-4">
+                    <div class="form-group">
+                        <label class="text-violet col-md-5"><span class="text-red">*</span><span class="text-info">Per Liter</span> / ریٹ:</label>
+                        @Html.EditorFor(model => model.SalePrice, new { htmlAttributes = new { @class = "form-control", @id = "sale" , @readonly = "readonly" } })
+                        @Html.ValidationMessageFor(model => model.SalePrice, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="col-6 pt-4">
+                    <div class="form-group">
+                        <label class="text-violet col-md-5"><span class="text-red">*</span>Fat</label>
+                        @Html.EditorFor(model => model.Fat, new { htmlAttributes = new { @class = "form-control", @id = "fat", @onInput = "calculateTS()" } })
+                        @Html.ValidationMessageFor(model => model.Fat, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-6 pt-4">
+                    <div class="form-group">
+                        <label class="text-violet col-md-5"><span class="text-red">*</span>LR</label>
+                        @Html.EditorFor(model => model.LR, new { htmlAttributes = new { @class = "form-control", @id = "lr", @onInput = "calculateTS()" } })
+                        @Html.ValidationMessageFor(model => model.LR, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="col-6 pt-4">
+                    <div class="form-group">
+                        <label class="text-violet col-md-5">دودھ TS</label>
+                        <input class="form-control" id="ts" disabled />
+                    </div>
+                </div>
+                <div class="col-6 pt-4">
+                    <div class="form-group">
+                        <label class="text-violet col-md-5">Total /کل رقم</label>
+                        <input class="form-control" id="total" disabled />
+                    </div>
+                </div>
+
+                <div class="col-6 pt-4">
+                    <div class="form-group">
+                        <label class="text-violet col-md-5"><span class="text-red">*</span>جمع رقم</label>
+                        @Html.EditorFor(model => model.CashDebit, new { htmlAttributes = new { @class = "form-control", @id = "debit", @oninput = "calculateBalance()" } })
+                        @Html.ValidationMessageFor(model => model.CashDebit, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-6 pt-4">
+                    <div class="form-group">
+                        <label class="text-violet col-md-5">Balance / بقایا</label>
+                        <input class="form-control" id="balance" disabled />
+                    </div>
+                </div>
+
+                <div class="col pt-4 pb-3">
+                    <div class="offset-2">
+                        <button type="submit" class="btn btn-default btnsm "><i class="bg-cover fa fa-save"></i> Save</button>
+                    </div>
+                </div>
+            </div>
+
+
+        }
+    </div>
+
+</div>
+<script>
+    $(document).ready(function () {
+        $('img').hide();
+    });
+    function SelectedValue(ddlObject) {
+        $('img').hide();
+        //Selected value of dropdownlist
+        var selectedValue = ddlObject.value;
+        var sl = parseFloat(document.getElementById(selectedValue + '+').value);
+        $("#sale").val(sl);
+        $('#' + selectedValue).show(300);
+    }
+    function calculateTotal() {
+        var pr = parseFloat(document.getElementById("sale").value);
+        var milk = parseFloat(document.getElementById("milk").value);
+        document.getElementById("total").value = pr * milk;
+
+    }
+    function calculateBalance() {
+        var dr = document.getElementById("debit").value;
+        var total = document.getElementById("total").value;
+        var balance = total - dr;
+        document.getElementById("balance").value = balance;
+    }
+    function calculateTS() {
+        document.getElementById("ts").value = null;
+        document.getElementById("total").value = null;
+        var milk = parseFloat(document.getElementById("milk").value);
+        var lr = parseFloat(document.getElementById("lr").value);
+        var fat = parseFloat(document.getElementById("fat").value);
+        var sale = parseFloat(document.getElementById("sale").value);
+        var f = fat * 0.22;
+        var l = (lr / 4) + 0.72;
+        var t = f + l;
+        var tl = t + fat;
+        var ts = (milk * tl) / 13;
+        var total = sale * ts;
+        document.getElementById("ts").value += ts;
+        document.getElementById("total").value += total;
+
+    }
+</script>
+

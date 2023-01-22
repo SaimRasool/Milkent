@@ -1,0 +1,50 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ViewIncomeStatement</title>
+    @Styles.Render("~/Content/css")
+
+</head>
+<body>
+    <div class="p-3">
+        <div class="row col-6">
+                <dl class="m-auto">
+                    <dt class="text-center">Mukhtar Diary Income Statement</dt>
+                    <dt>For the Date @ViewBag.Fromdate.ToString(string.Format("dd/MM/yyyy")) to @ViewBag.Todate.ToString(string.Format("dd/MM/yyyy"))</dt>
+                </dl>
+            <table class="table table-responsive-sm">
+                <thead>
+                    <tr>
+                        <th>
+                            <dl><strong>Revenue</strong></dl>
+                        </th>
+                        <td><dl><dt>Sale</dt><dt>Total Revenue</dt></dl> </td>
+                        <td><dl><dt><u>@ViewBag.Sale</u></dt><dt>@ViewBag.Sale</dt></dl></td>
+                    </tr>
+                    <tr>
+                        <th>
+                           <dl><strong>Expenses</strong></dl> 
+                        </th>
+                        <td><dl><dt>Purchase</dt><dt>Total Expenses</dt></dl></td>
+                        <td><dl><dt><u>@ViewBag.Purchase</u></dt><dt>@ViewBag.Purchase</dt></dl></td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <strong>Net Income</strong>
+                        </th>
+                        <td> (Revenue + Gains) – (Expenses + Losses)</td>
+                        <td>@ViewBag.Profit</td>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

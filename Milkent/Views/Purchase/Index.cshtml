@@ -1,0 +1,229 @@
+﻿@model Milkent.Models.MdlPurchase
+@{
+    ViewBag.Title = "Index";
+}
+
+<script>
+        $(document).ready(function () {
+            $('img').hide();
+            $('#dateRange').hide();
+            $('#partOfDay').hide();
+            }); 
+
+    var otable ="";
+    function SelectedValue(ddlObject) {
+        if ($.fn.DataTable.isDataTable('#demoGrid')) {
+            $('#demoGrid').DataTable().clear().destroy();
+            $('#demoGrid tbody').empty();
+        }
+        $('img').hide();
+        $('#dateRange').show();
+        $('#partOfDay').show();
+        $("#newLengthPlace").empty();
+        var selectedValue=0;
+        if (ddlObject.value !=="")
+         selectedValue = parseInt(ddlObject.value);       
+        $('#' + selectedValue).show(300);
+
+        otable = $("#demoGrid").DataTable({
+            "oLanguage": {
+                "sSearch": "Filter Data"
+            },
+            "language":
+            {
+                "processing": "<div class='overlay custom-loader-background'><i class='fa fa-cog fa-spin custom-loader-color'></i></div>"
+            }, 
+            "processing": true, // for show progress bar
+            "retrieve": true,
+            "serverSide": true, // for process server side
+           "filter": false, // this is for disable filter (search box)
+            "orderMulti": false, // for disable multiple column at once
+            'serverMethod': 'post',
+           // "dom": '<"top"i>rt<"bottom"lp><"clear">',  
+            "ajax": {
+                "url": "/Purchase/LoadPurchasesData?id=" + selectedValue,
+             
+                'data': function (data) {
+                    // Read values
+                    var from_date = $('#min').val();
+                    var to_date = $('#max').val();
+                    var DayPart = $('#partOfDay').val();
+                    if (from_date != null && to_date != null && DayPart!=null) {
+                        data.searchByFromdate = from_date;
+                        data.searchByTodate = to_date;
+                        data.searchByDayPart = DayPart;
+                    }
+                    else {
+                        data.searchByFromdate = "";
+                        data.searchByTodate = "";
+                        data.searchByDayPart = "";
+                    }
+
+                    // Append to data
+                   
+                },
+                "type": "POST",
+                "scrollX": true,
+                "datatype": "json"
+            },
+            "columnDefs": [{
+                "targets": [0],
+                "visible": false,
+                "searchable": true
+            }],
+            "columns": [
+                { "data": "ID", "name": "ID", "autoWidth": true },
+                {
+                    'data': 'Date',
+                    'render': function (jsonDate) {
+                        var date = new Date(parseInt(jsonDate.substr(6)));
+                        var month = ("0" + (date.getMonth() + 1)).slice(-2);
+                        return ("0" + date.getDate()).slice(-2) + '-' + month + '-' + date.getFullYear();
+                    }
+                }, 
+                { "data": "PartOfDay", "name": "PartOfDay", "autoWidth": true },
+                { "data": "Milk", "name": "Milk", "autoWidth": true },
+                { "data": "PurchasePrice", "name": "PurchasePrice", "autoWidth": true },
+                { "data": "Fat", "name": "Fate", "autoWidth": true },
+                { "data": "LR", "name": "LR", "autoWidth": true },
+                { "data": "TS", "name": "LR", "autoWidth": true },
+                { "data": "Total", "name": "Total", "autoWidth": true },
+                { "data": "Credit", "name": "Credit", "autoWidth": true },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        return row.Total - row.Credit;
+                    }
+                },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        return "<a href='#' class='btn btn-primary btn-sm text-white' onclick=Update('" + row.ID + "'); >Edit</a> <a  class='btn btn-danger btn-sm' onclick=Delete('" + row.ID + "'); >Delete</a>";                
+                    }
+                },
+            ]
+
+        });
+        $("#newLengthPlace").html($(".dataTables_length"));
+         
+      
+       // $("#demoGrid_filter").css("display", "none");
+
+    };
+
+    function  Search() { 
+        otable.draw();   
+    };
+      function Update(ID) {
+          var url = '@Url.Content("~/" )' + "Purchases/EditPurchase?id="+ID;
+        window.location.replace(url)
+}
+    function Delete(CustomerID) {
+        swal({
+            title: "Are you sure?",
+            text: "Once deleted, you will not be able to recover this imaginary transaction!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    var url = '@Url.Content("~/" )' + "Purchases/DeletePurchase";
+                    $.post(url, { ID: CustomerID }, function(data) {
+                    if (data) {
+                        oTable = $('#demoGrid').DataTable();
+                        oTable.draw();
+                        swal("Poof! Your imaginary transaction  has been deleted!", {
+                            icon: "success",
+                        });
+                    } else {
+                        swal("You Cant this Record Now!");
+                           }
+    });
+                    
+                } else {
+                    swal("Your imaginary transaction  is safe!");
+                }
+            });
+    
+}
+
+</script>
+
+
+<!-- Page Header-->
+<header class="page-header">
+    <div class="container-fluid">
+        <h2 class="no-margin-bottom">Purchases</h2>
+    </div>
+</header>
+
+<div class="p-3">
+    <div class="row">
+        <div class="col-4 pt-2">
+            @foreach (var item in Model.SupplierList)
+            {
+                <img src="@Url.Content(item.Image)" id="@item.ID" width="150" height="150" />
+            }
+        </div>
+        <div class="col-4 pt-2 pb-2 form-inline">
+            @if (Model.SupplierList != null)
+            {
+                <div class="form-group">
+                    <label class="text-violet mr-sm-1"><span class="text-red">*</span>Supplier:</label>
+                    @Html.DropDownListFor(md => md.SupplierID, new SelectList(Model.SupplierList, "ID", "Name"), "--Select--", new { @class = "form-control", @style = "border-radius:17px;", @onChange = "SelectedValue(this)" })
+                </div>
+            }
+        </div>
+
+        <div class="card col-12">
+            <div class="card-header d-flex">
+                <h3 class="h4 m-auto">Purchases</h3>
+            </div>
+            <div class="card-body col-md-12">
+                <div class="row p-3">
+                    <div id="newLengthPlace" class="form-inline col-3"></div>
+                    <div class="col-2 offset-2">
+                            <select id="partOfDay" class="form-control"  onchange="Search()">
+                                <option value="" selected>شام/ صبح</option>
+                                <option value="Morning">Morning صبح</option>
+                                <option value="Evening">Evening شام </option>
+                            </select>
+                        </div>
+
+                        <div class="input-group form-inline col-5" id="dateRange">
+                            <input id="min" type="date" class="form-control col-5" placeholder="Start Date" onchange="Search()" />
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">to</span>
+                            </div>
+                            <input id="max" type="date" class="form-control col-5 " placeholder="End Date" onchange="Search()" />
+                        </div>
+                    </div>
+                <div class="table-responsive">
+
+                    <table id="demoGrid" class="table table-striped table-sm" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Date</th>
+                                <th>شام/صبح</th>
+                                <th>Milk/دودھ</th>
+                                <th>ریٹ</th>
+                                <th>Fat</th>
+                                <th>LR</th>
+                                <th>TS</th>
+                                <th>کل رقم</th>
+                                <th>جمع رقم</th>
+                                <th>بقایا</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

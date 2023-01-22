@@ -1,0 +1,191 @@
+﻿<script src="~/Scripts/Dashboard/charts-home.js"></script>
+<script src="~/Scripts/Dashboard/Chart.js"></script>
+<!-- Page Header-->
+<header class="page-header">
+    <div class="container-fluid">
+        <h2 class="no-margin-bottom">Dashboard</h2>
+    </div>
+</header>
+
+<section class="client no-padding-bottom">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Work Amount  -->
+            <div class="col-lg-4 m-auto">
+                <div class="work-amount card">
+                    <div class="card-close">
+                        <div class="dropdown">
+                            <button type="button" id="closeCard1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle"><i class="fa fa-ellipsis-v"></i></button>
+                            <div aria-labelledby="closeCard1" class="dropdown-menu dropdown-menu-right has-shadow"><a href="#" class="dropdown-item remove"> <i class="fa fa-times"></i>Close</a></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h3>Chiler</h3><small>Total Milk in Chiler.</small>
+                        <div class="chart text-center">
+                            <div class="text"><strong>@ViewBag.Milk</strong><br><span>Liters</span></div>
+                            <canvas id="pieChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</section>
+
+<section class="client no-padding-top">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="client card">
+                    <div class="card-body text-center">
+                        <div class="client-avatar">
+                            <i class=" display-3 img-fluid fa fa-cart-plus rounded-circle"></i>
+                            <div class="status bg-green"></div>
+                        </div>
+                        <div class="client-title">
+                            <h3>Today</h3><span>Sales</span>
+                        </div>
+                        <div class="client-info">
+                            <div class="row">
+                                <div class="col-4"><strong>@ViewBag.NoOfSales</strong><br><small>Total</small></div>
+                                <div class="col-4"><strong>@ViewBag.MilkSales Liter</strong><br><small>Liter</small></div>
+                                <div class="col-4"><strong>@System.Math.Round(ViewBag.Sales, 2)</strong><br><small>Rupees</small></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="client card">
+                    <div class="card-body text-center">
+                        <div class="client-avatar">
+                            <i class=" display-3 fa fa-cart-arrow-down rounded-circle"></i>
+                            <div class="status bg-green"></div>
+                        </div>
+                        <div class="client-title">
+                            <h3>Today</h3><span>Purchase</span>
+                        </div>
+                        <div class="client-info">
+                            <div class="row">
+                                <div class="col-4"><strong>@ViewBag.NoOfPurchases</strong><br><small>Total</small></div>
+                                <div class="col-4"><strong>@ViewBag.MilkPurchases Liter</strong><br><small>Milk</small></div>
+                                <div class="col-4"><strong>@System.Math.Round(ViewBag.Purchases, 2)</strong><br><small>Rupees</small></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="overdue card">
+                    <div class="card-body">
+                        <h3>Total Profit</h3><small>of Today in Rupees.</small>
+                                             <div class="number text-center">Rs @System.Math.Round(ViewBag.Profit, 2)</div>
+                        <div class="chart">
+                            <canvas id="lineChart1">  </canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="client no-padding-top">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="client card">
+                    <div class="card-body text-center">
+                        <div class="client-avatar">
+                            <i class="display-3 fa fa-cart-plus rounded-circle"></i>
+                            <div class="status bg-green"></div>
+                        </div>
+                        <div class="client-title">
+                            <h3>This Month</h3><span>Sales</span>
+                        </div>
+                        <div class="client-info">
+                            <div class="row">
+                                <div class="col-4"><strong>@ViewBag.NoOfMonthSales</strong><br><small>Total</small></div>
+                                <div class="col-4"><strong>@ViewBag.MonthMilkSales Liter</strong><br><small>Milk</small></div>
+                                <div class="col-4"><strong>@System.Math.Round(ViewBag.MonthSales, 2)</strong><br><small>Rupees</small></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="client card">
+                    <div class="card-body text-center">
+                        <div class="client-avatar">
+                            <i class=" display-3 fa fa-cart-arrow-down rounded-circle"></i>
+                            <div class="status bg-green"></div>
+                        </div>
+                        <div class="client-title">
+                            <h3>This Month</h3><span>Purchase</span>
+                        </div>
+                        <div class="client-info">
+                            <div class="row">
+                                <div class="col-4"><strong>@ViewBag.NoOfMonthPurchases</strong><br><small>Total</small></div>
+                                <div class="col-4"><strong>@ViewBag.MonthMilkPurchases Liter</strong><br><small>Milk</small></div>
+                                <div class="col-4"><strong>@System.Math.Round(ViewBag.MonthPurchases, 2)</strong><br><small>Rupees</small></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="overdue card">
+                    <div class="card-body">
+                        <h3>Total Profit</h3><small>of This Month in Rupees.</small>
+                         <div class="number text-center">Rs @System.Math.Round(ViewBag.MonthProfit, 2)</div>
+                        <div class="chart">
+                            <canvas id="lineChart1">    </canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Dashboard Counts Section-->
+<section class="dashboard-counts">
+    <div class="container-fluid">
+        <div class="row bg-white has-shadow">
+            <!-- Item -->
+            <div class="col-xl-6 col-sm-6">
+                <div class="item d-flex align-items-center">
+                    <div class="icon bg-violet"><i class="fa fa-group"></i></div>
+                    <div class="title">
+                        <span>Total<br>Customer</span>
+                        <div class="progress">
+                            <div role="progressbar" style="width: 25%; height: 4px;" aria-valuenow="@((int)ViewBag.Customer)" aria-valuemin="0" aria-valuemax="10" class="progress-bar bg-violet"></div>
+                        </div>
+                    </div>
+                    <div class="number"><strong>@ViewBag.Customer</strong></div>
+                </div>
+            </div>
+            <!-- Item -->
+            <div class="col-xl-6 col-sm-6">
+                <div class="item d-flex align-items-center">
+                    <div class="icon bg-red"><i class="fa fa-bus"></i></div>
+                    <div class="title">
+                        <span>Total<br>Supplier</span>
+                        <div class="progress">
+                            <div role="progressbar" style="width: 70%; height: 4px;" aria-valuenow="@((int)ViewBag.Supplier)" aria-valuemin="0" aria-valuemax="10" class="progress-bar bg-red"></div>
+                        </div>
+                    </div>
+                    <div class="number"><strong>@ViewBag.Supplier</strong></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+
+

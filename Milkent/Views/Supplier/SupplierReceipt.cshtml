@@ -1,0 +1,223 @@
+﻿@model Milkent.Models.MdlPurchase
+
+@{
+    ViewBag.Title = "Supplier Receipt";
+}
+<script>
+        $(document).ready(function () {
+            $('img').hide();
+            $('#cl').hide();
+            });
+
+    var otable ="";
+    function SelectedValue(ddlObject) {
+        if ($.fn.DataTable.isDataTable('#demoGrid')) {
+            $('#demoGrid').DataTable().clear().destroy();
+            $('#demoGrid tbody').empty();
+        }
+        $('img').hide();
+        $('#cl').show();
+        $("#newLengthPlace").empty();
+        var selectedValue=0;
+        if (ddlObject.value !=="")
+         selectedValue = parseInt(ddlObject.value);
+        $('#' + selectedValue).show(300);
+
+        otable = $("#demoGrid").DataTable({
+            "oLanguage": {
+                "sSearch": "Filter Data"
+            },
+            "language":
+            {
+                "processing": "<div class='overlay custom-loader-background'><i class='fa fa-cog fa-spin custom-loader-color'></i></div>"
+            },
+            "processing": true, // for show progress bar
+            "retrieve": true,
+            "serverSide": true, // for process server side
+           "filter": true, // this is for disable filter (search box)
+            "orderMulti": false, // for disable multiple column at once
+            'serverMethod': 'post',
+           // "dom": '<"top"i>rt<"bottom"lp><"clear">',
+            "ajax": {
+                "url": "/Supplier/LoadPurchaseReceipt?id=" + selectedValue,
+
+                'data': function (data) {
+                    // Read values
+                    var cl = $('#cl').val();
+                    if ( cl!=null) {
+                        data.searchByfilter = cl;
+                    }
+                    else {
+                        data.searchByfilter = "";
+                    }
+
+                    // Append to data
+
+                },
+                "type": "POST",
+                "scrollX": true,
+                "datatype": "json"
+            },
+            "columns": [
+                { "data": "ID", "name": "ID", "autoWidth": true },
+                {
+                    'data': 'Date',
+                    'render': function (jsonDate) {
+                        var date = new Date(parseInt(jsonDate.substr(6)));
+                        var month = ("0" + (date.getMonth() + 1)).slice(-2);
+                        return ("0" + date.getDate()).slice(-2) + '-' + month + '-' + date.getFullYear();
+                    }
+                },
+                {
+                    'data': 'FromDate',
+                    'render': function (jsonDate) {
+                        var date = new Date(parseInt(jsonDate.substr(6)));
+                        var month = ("0" + (date.getMonth() + 1)).slice(-2);
+                        return ("0" + date.getDate()).slice(-2) + '-' + month + '-' + date.getFullYear();
+                    }
+                },
+                {
+                    'data': 'ToDate',
+                    'render': function (jsonDate) {
+                        var date = new Date(parseInt(jsonDate.substr(6)));
+                        var month = ("0" + (date.getMonth() + 1)).slice(-2);
+                        return ("0" + date.getDate()).slice(-2) + '-' + month + '-' + date.getFullYear();
+                    }
+                },
+                { "data": "Total", "name": "Total", "autoWidth": true },
+                { "data": "Credit", "name": "Credit", "autoWidth": true },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        return row.Total - row.Credit;
+                    }
+                },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        if (row.Credit == 0)
+                            return "<a  class='btn btn-primary btn-sm text-white' onclick=View('" + row.ID + "'); >View</a> <a  class='btn btn-primary btn-sm text-white' onclick=Update('" + row.ID + "'); >Payment</a> <a  class='btn btn-danger btn-sm' onclick=Delete('" + row.ID + "'); >Delete</a>";
+                        else
+                            return "<a  class='btn btn-primary btn-sm text-white' onclick=View('" + row.ID + "'); >View</a> <a  class='btn btn-primary btn-sm text-white' onclick=Update('" + row.ID + "'); >Payment</a>";
+                    }
+                },
+            ]
+
+        });
+        $("#newLengthPlace").html($(".dataTables_length"));
+        $("#newLengthPlace").html($(".dataTables_length"));
+    };
+
+    function  Search() {
+        otable.draw();
+    };
+    function View(ID) {
+        var url = '@Url.Content("~/" )' + "Supplier/ViewReceipt?id="+ID;
+        window.location.replace(url)
+    }
+    function Update(ID) {
+          var url = '@Url.Content("~/" )' + "Supplier/SupplierPayment?id="+ID;
+        window.location.replace(url)
+}
+    function Delete(CustomerID) {
+        swal({
+            title: "Are you sure?",
+            text: "Once deleted, you will not be able to recover this imaginary transaction!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    var url = '@Url.Content("~/" )' + "Supplier/DeletePurchaseReceipt";
+                    $.post(url, { ID: CustomerID }, function(data) {
+                    if (data) {
+                        oTable = $('#demoGrid').DataTable();
+                         oTable.draw();
+                    } else {
+                         alert("Something Went Wrong Record can't be Deleted!");
+                           }
+    });
+                    swal("Poof! Your imaginary transaction  has been deleted!", {
+                        icon: "success",
+                    });
+                } else {
+                    swal("Your imaginary transaction  is safe!");
+                }
+            });
+
+}
+
+</script>
+
+
+<!-- Page Header-->
+<header class="page-header">
+    <div class="container-fluid">
+        <h2 class="no-margin-bottom">Purchases</h2>
+    </div>
+</header>
+
+<div class="p-3">
+    <div class="row">
+        <div class="col-4 pt-2">
+            @foreach (var item in Model.SupplierList)
+            {
+                <img src="@Url.Content(item.Image)" id="@item.ID" width="150" height="150" />
+            }
+        </div>
+        <div class="col-4 pt-2 pb-2 form-inline">
+            @if (Model.SupplierList != null)
+            {
+                <div class="form-group">
+                    <label class="text-violet mr-sm-1"><span class="text-red">*</span>Supplier:</label>
+                    @Html.DropDownListFor(md => md.SupplierID, new SelectList(Model.SupplierList, "ID", "Name"), "--Select--", new { @class = "form-control", @style = "border-radius:17px;", @onChange = "SelectedValue(this)" })
+                </div>
+            }
+        </div>
+        <div class="col-4 pt-2 pb-2 form-inline">
+                <select id="cl" class="form-control" onchange="Search()">
+                    <option value="" selected>ALL</option>
+                    <option value="Cleared">Cleared</option>
+                    <option value="UnCleared">UnCleared</option>
+                </select>
+        </div>
+        <div class="card col-12">
+            <div class="card-header d-flex">
+                <h3 class="h4 m-auto">Purchases</h3>
+            </div>
+            <div class="card-body col-md-12">
+                <div class="row p-3">
+                    <div id="newLengthPlace" class="form-inline col-3"></div>
+                    <div class="col-2 offset-2">
+
+                    </div>
+
+                    <div id="newSearchPlace" class="form-inline" style="padding-left:0px;"></div>
+                </div>
+                <div class="table-responsive">
+
+                    <table id="demoGrid" class="table table-striped table-sm" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>BillNo</th>
+                                <th>Date</th>
+                                <th>From Date</th>
+                                <th>ToDate</th>
+                                <th>کل رقم</th>
+                                <th>جمع رقم</th>
+                                <th>بقایا</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
